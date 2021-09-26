@@ -1,26 +1,56 @@
 import streamlit as st
 
-import matplotlib
-
 import datetime
 import plotly.offline as py
 import plotly.graph_objs as go
 import pandas_datareader as web
-import matplotlib.pyplot as plt
+import data_file
+import parsing 
 
 
 st.title('Crypto Tracker')
-crypto_result = st.radio("Coins", ("Bitcoin","Ethereum","Dogecoin","Tether"))
-'''ethereum_true = st.radio("Ethereum", "0")
-dogecoin_true = st.radio("Dogecoin", "0")
-tether_true = st.radio("Tether", "0")'''
-'''st.write(bitcoin_true)
-st.write(ethereum_true)
-st.write(dogecoin_true)
-st.write(tether_true)
-test = st.button("TEST","1")
-st.write(test)'''
-st.write(crypto_result)
+st.markdown("""---""")
+col1,col2=st.columns(2)
+
+#crypto_result = st.radio("Coins", ("Bitcoin","Ethereum","Dogecoin","Tether"))
+col1, col2, col3,col4,col5= st.columns(5)
+with col1:
+    bitcoin_true = st.button("Bitcoin", "0")
+with col2:
+    ethereum_true = st.button("Ethereum", "0")
+with col3:
+    dogecoin_true = st.button("Dogecoin", "0")
+with col4:
+    tether_true = st.button("Tether", "0")
+
+
+#testing=st.markdown("""<button type="button" value="123">Click Me!</button>""",unsafe_allow_html=True)
+m = st.markdown("""
+<style>
+div.stButton > button:first-child {
+    background-color: #22333b;
+    transition: 0.2s;
+    padding: 15px 28px;
+    border-radius: 24px;
+    
+}
+div.stButton button:hover {
+    background-color: #314b57;
+    color: #00000
+    border-color:#00000
+}
+div.stButton button:active {
+    background-color: #22333b;
+    color: #00000
+    border-color:#00000
+}
+</style>""", unsafe_allow_html=True)
+
+
+
+
+
+#st.write(crypto_result)
 
 start = datetime.datetime(2014, 1, 1)
 end = datetime.datetime(2025, 1, 1)
@@ -29,6 +59,10 @@ BTC = web.DataReader('BTC-USD', 'yahoo', start, end)
 ETH = web.DataReader('ETH-USD', 'yahoo', start, end)
 DOGE = web.DataReader('DOGE-USD', 'yahoo', start, end)
 TETHER = web.DataReader('USDT-USD', 'yahoo', start, end)
+
+
+
+
 
 trace = go.Ohlc(
     x=BTC.index[:],
@@ -82,42 +116,67 @@ layout = {
 }
 
 data2 = [trace2]
-layout = {
+layout2 = {
     'title': 'ETH - ETHEREUM',
     'xaxis': {'title': 'Timeframe'},
     'yaxis': {'title': 'Price'}
 }
 
 data3 = [trace3]
-layout = {
+layout3 = {
     'title': 'DOGE - DOGECOIN',
     'xaxis': {'title': 'Timeframe'},
     'yaxis': {'title': 'Price'}
 }
 
 data4 = [trace4]
-layout = {
+layout4 = {
     'title': 'USDT - TETHER',
     'xaxis': {'title': 'Timeframe'},
     'yaxis': {'title': 'Price'}
 }
 
-fig = None
 fig = dict(data=data, layout=layout)
-fig2 = dict(data=data2, layout=layout)
-fig3 = dict(data=data3, layout=layout)
-fig4 = dict(data=data4, layout=layout)
 
-if crypto_result == "Bitcoin":
-    fig = dict(data=data, layout=layout)
-elif crypto_result == "Ethereum":
-    fig = dict(data=data2, layout=layout)
-elif crypto_result == "Dogecoin":
-    fig = dict(data=data3, layout=layout)
-elif crypto_result == "Tether":
-    fig = dict(data=data4, layout=layout)
-st.plotly_chart(fig)
-'''py.plot(fig, filename='crypto.html')
-py.plot(fig2, filename='crypto1.html')
-py.plot(fig3, filename='crypto2.html')
-py.plot(fig4, filename='crypto3.html')'''
+col_1,col_2,col_3,col_4,col_5=st.columns(5)
+crypto_result='bitcoin'
+with col_2:
+    if bitcoin_true:
+        fig = dict(data=data, layout=layout)
+        crypto_result='bitcoin'
+    elif ethereum_true:
+        fig = dict(data=data2, layout=layout2)
+        crypto_result='ethereum'
+    elif dogecoin_true:
+        fig = dict(data=data3, layout=layout3)
+        crypto_result='dogecoin'
+    elif tether_true:
+        fig = dict(data=data4, layout=layout4)
+        crypto_result='tether'
+    st.plotly_chart(fig)
+    with col_1:
+        st.text('')
+        st.text('')
+        st.text('')
+        st.text('')
+        st.text('')
+        st.text('')
+        data_file.coinInfo(crypto_result)
+
+
+
+
+m = st.markdown("""<style>
+.stTextInput>div>div>input {
+    background-color: #22333b;
+    transition: 0.2s;  
+}
+.stTextInput>div>div>input:hover{
+    background-color: #314b57;
+     
+}
+</style>""", unsafe_allow_html=True)
+
+command = st.text_input('Search') 
+parsing.getCommand(command)
+st.write()

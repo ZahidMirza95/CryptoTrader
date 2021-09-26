@@ -8,19 +8,23 @@ import data_file
 import parsing 
 
 
-st.title('Crypto Tracker')
+st.title('Crypto Trader')
 st.markdown("""---""")
 col1,col2=st.columns(2)
 
 #crypto_result = st.radio("Coins", ("Bitcoin","Ethereum","Dogecoin","Tether"))
 col1, col2, col3,col4,col5= st.columns(5)
+
 with col1:
-    bitcoin_true = st.button("Bitcoin", "0")
+    st.write("")
+    st.markdown('**Most Popular :**')
 with col2:
-    ethereum_true = st.button("Ethereum", "0")
+    bitcoin_true = st.button("Bitcoin", "0")
 with col3:
-    dogecoin_true = st.button("Dogecoin", "0")
+    ethereum_true = st.button("Ethereum", "0")
 with col4:
+    dogecoin_true = st.button("Dogecoin", "0")
+with col5:
     tether_true = st.button("Tether", "0")
 
 
@@ -177,6 +181,17 @@ m = st.markdown("""<style>
 }
 </style>""", unsafe_allow_html=True)
 
-command = st.text_input('Search') 
-parsing.getCommand(command)
-st.write()
+command = st.text_input('Console') 
+#st.write(command)
+
+if not command:
+    st.warning('hint - type "-help"')
+ 
+else:
+    parsing.getCommand(command)
+#st.write(command)
+
+
+
+   
+

@@ -1,12 +1,14 @@
 import operator # might need
 import data_file
 import streamlit as st
+import calc
+import variables
 
-activeCoins = [] #Stores the id's of coins currently in view
+
 pairList = ['BTC-AUD', 'ETH-AUD', 'LTC-AUD', 'XRP-AUD', 'BCH-AUD', 'USDT-AUD', 'EOS-AUD', 'XLM-AUD', 'DOT-AUD', 'LINK-AUD', 'USDC-AUD', 'BSV-AUD', 'ADA-AUD', 'DOGE-AUD',
 
         'BTC-USD']
-exchangesList = ["gdax","gemini","itbit","kraken","bitstamp"]
+
 currency = ''
 
 commands_Dict = {
@@ -39,6 +41,34 @@ commands_Dict = {
         'SUBS': {},
         'Help': '[coinID]'
     },
+    '-pair':{
+        'Desc': 'View buy and sell cost of pair across multiple exchanges',
+        'minArgs': 1,
+        'maxArgs': 5,
+        'SUBS': {},
+        'Help': '[pairID]'
+    },
+    '-bid':{
+        'Desc': 'Switch pair side param to bids',
+        'minArgs': 0,
+        'maxArgs': 0,
+        'SUBS': {},
+        'Help': '-bid'
+    },
+    '-ask':{
+        'Desc': 'Switch pair side param to asks',
+        'minArgs': 0,
+        'maxArgs': 0,
+        'SUBS': {},
+        'Help': '-ask'
+    },
+    '-q': {
+        'Desc': 'Change pair quantity param',
+        'minArgs': 1,
+        'maxArgs': 1,
+        'SUBS': {},
+        'Help': '[int]'
+    },
     '-info':{
         'Desc': 'Get coin specific info.',
         'minArgs': 1,
@@ -54,7 +84,22 @@ commands_Dict = {
         'Help': '-help'
     }
 }
+def quantity(splits):
+    splits.remove(splits[0])
+    variables.pairQuantity = splits[0]
+    st.write('Pair quantity param changed to', variables.pairQuantity)
 
+def bidsSide():
+    calc.side = 'bids'
+    st.write('Pair side param changed to bids')
+
+def asksSide():
+    calc.side = 'asks'
+    st.write('Pair side param changed to asks')
+
+def checkPair(splits):
+    splits.remove(splits[0])
+    data_file.checkPair(splits)
 def watch(splits):
     for split in splits:
         if split != splits[0]:
@@ -68,8 +113,8 @@ def coinInfo(splits):
 def searchCoin(splits):
     for split in splits:
         if split != splits[0] and not split.__contains__('-'):
-            activeCoins.append(split)
-    data_file.searchCoin(activeCoins, 'usd')
+            variables.activeCoins.append(split)
+    data_file.searchCoin(variables.activeCoins, 'usd')
 
 def manageCurrency(splits):
     cmd = splits[0]
@@ -80,8 +125,11 @@ def manageCurrency(splits):
             splits.remove(split)
             if len(splits) == 0:
                 st.write('Current Currency: ' + 'usd')
+                print('Current Currency: ' + 'usd')
             else:
                 st.write('Invalid syntax, proper usage:', cmd, commands_Dict[cmd]['Help'])
+                print('Invalid syntax, proper usage:', cmd, commands_Dict[cmd]['Help'])
+
         if split.__contains__('-c'):
             splits.remove(split)
             if len(splits) == 1:
@@ -104,7 +152,11 @@ def validateCommand():
         return True
 
 def getCommand(input):
+    global command
     command=input
+    print("calling function commands with input ",input)
+    commands()
+
     
 def commands():
     global command
@@ -130,9 +182,21 @@ def commands():
         if (cmd == '-watch'):
             if(validateCommand()):
                 watch(splits)
+        if (cmd == '-pair'):
+            if(validateCommand()):
+                checkPair(splits)
+        if cmd == '-bid':
+            if validateCommand():
+                bidsSide()
+        if cmd == '-ask':
+            if validateCommand():
+                asksSide()
+        if cmd == '-q':
+            if validateCommand():
+                quantity(splits)
     else:
         st.write('Command', command, 'does not exist\n')
-    waitCommand()
+    #waitCommand()
 
 
 def waitCommand():

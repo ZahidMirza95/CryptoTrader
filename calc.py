@@ -2,6 +2,8 @@ import datetime
 import json
 import requests
 import os
+import streamlit as st
+import variables
 
 class Client(object):
 
@@ -23,9 +25,9 @@ class Client(object):
         global pair
         req = {
         "currency_pair": pair,  # currency pair to get prices for
-        "exchanges": ["gdax","gemini","itbit","kraken","bitstamp"],  # exchanges to include in the cost calculation
-        "side": "asks",  # "asks" is for the buy price, "bids" is for the sell price
-        "quantity": 100,  # quantity of the target currency to get the price for
+        "exchanges": variables.exchangesList,  # exchanges to include in the cost calculation
+        "side": side,  # "asks" is for the buy price, "bids" is for the sell price
+        "quantity": variables.pairQuantity,  # quantity of the target currency to get the price for
         "levels": 1000,  # number of price levels to consider.  Defaults to 1000 which is sufficient for most use cases
 
         # This is the name of the strategy to use for calculating available balances
@@ -61,11 +63,12 @@ class Client(object):
         sell_first_price = bids_data.get('first_price')
         sell_cost = sell_first_price - sell_avg_price
 
-        print("Buy Cost: {} Sell Cost: {}".format(buy_cost, sell_cost))
-        print("Exchanges: {}".format())
-        print("Quantity: {}")
+        st.write("Buy Cost: {} Sell Cost: {}".format(buy_cost, sell_cost))
+        st.write("Exchanges: {}".format(variables.exchangesList))
+        st.write("Quantity: {}".format(variables.pairQuantity))
+        st.write("Side: {}".format(side))
 
-
+side='asks'
 pair = 'BTC-USD'
 def initRun():
     c = Client()

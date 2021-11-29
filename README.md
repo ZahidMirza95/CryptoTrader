@@ -1,2 +1,2 @@
-# shellhacksnew2021 
+# CryptoTrader
 An app that let's you track/trade cryptocurrencies.
